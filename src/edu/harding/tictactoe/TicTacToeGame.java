@@ -8,19 +8,21 @@ public class TicTacToeGame {
 	private char mBoard[] = {'1','2','3','4','5','6','7','8','9'};
 	final static int BOARD_SIZE = 9;
 	
-	// The computer's difficulty levels 
+	// Nivel de dificultad
 	public enum DifficultyLevel {Easy, Harder, Expert};		
-	// Current difficulty level
+	// Nivel de dificultad actual
 	private DifficultyLevel mDifficultyLevel = DifficultyLevel.Expert;   
-
+	//Representacion de jugadas del jugador en el tablero 
 	public static final char HUMAN_PLAYER = 'X';
+	//Representacion de jugadas del computador en el tablero
 	public static final char COMPUTER_PLAYER = 'O';
+	//Representacion de casillas disponibles en el tablero
 	public static final	char OPEN_SPOT	= '	';
-	
+	//Numero aleatorio para siguiente movimiento del computador
 	private Random mRand; 
 	
 	public TicTacToeGame() {
-		// Seed the random number generator
+		// Semilla para el generador de numeros aleatorios
 		mRand = new Random(); 
 	}
 	
@@ -34,14 +36,14 @@ public class TicTacToeGame {
 		System.out.println();
 	}
 	
-	// Check for a winner.  Return
-	//  0 if no winner or tie yet
-	//  1 if it's a tie
-	//  2 if X won
-	//  3 if O won
+	// checkForWinner() funcion que retorna  Return
+	//  0 si no hay un ganador o empate
+	//  1 si es un empate
+	//  2 si X gano
+	//  3 si O gano
 	public int checkForWinner() {
 		
-		// Check horizontal wins
+		// Verifica ganador en horizontales
 		for (int i = 0; i <= 6; i += 3)	{
 			if (mBoard[i] == HUMAN_PLAYER && 
 				mBoard[i+1] == HUMAN_PLAYER &&
@@ -53,7 +55,7 @@ public class TicTacToeGame {
 				return 3;
 		}
 	
-		// Check vertical wins
+		// Verifica ganador en verticales
 		for (int i = 0; i <= 2; i++) {
 			if (mBoard[i] == HUMAN_PLAYER && 
 				mBoard[i+3] == HUMAN_PLAYER && 
@@ -65,7 +67,7 @@ public class TicTacToeGame {
 				return 3;
 		}
 	
-		// Check for diagonal wins
+		// Verifica ganador en verticales
 		if ((mBoard[0] == HUMAN_PLAYER &&
 			 mBoard[4] == HUMAN_PLAYER && 
 			 mBoard[8] == HUMAN_PLAYER) ||
@@ -81,27 +83,31 @@ public class TicTacToeGame {
 			 mBoard[6] == COMPUTER_PLAYER))
 			return 3;
 	
-		// Check for tie
+		// Verifica si hay empate
 		for (int i = 0; i < BOARD_SIZE; i++) {
-			// If we find a number, then no one has won yet
+			// Si hay una casilla sin movimiento ni humano ni del computador aun no hay ganador ni empate
 			if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER)
 				return 0;
 		}
 	
-		// If we make it through the previous loop, all places are taken, so it's a tie
+		// Si ningun caso anterior se presenta, entonces es un empate
 		return 1;
 	}
-			
+	//getComputerMove(). Retorna
+	//Se obtiene la casilla donde jugara el computador dependiendo de la dificultad
 	public int getComputerMove() 
 	{
 		int move;
+		//Si la dificultad es facil
 		if(mDifficultyLevel == DifficultyLevel.Easy){
+			//Se calcula un movimiento aleatorio disponible
 			do
 			{
 				move = mRand.nextInt(BOARD_SIZE);
 			} while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+		//Si la dificultad es dificil
 		}else if(mDifficultyLevel == DifficultyLevel.Harder){ 
-			// First see if there's a move O can make to win
+			// Se evalua si hay un movimiento para que el computador gane
 			for (int i = 0; i < BOARD_SIZE; i++) {
 				if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
 					char curr = mBoard[i];
@@ -114,13 +120,14 @@ public class TicTacToeGame {
 						mBoard[i] = curr;
 				}
 			}
-			// Generate random move
+			// De lo contrario de genera un movimiento aleatorio
 			do
 			{
 				move = mRand.nextInt(BOARD_SIZE);
-			} while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);			
+			} while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);	
+		//Si la dificultad es experto
 		}else{
-			// First see if there's a move O can make to win
+			// Se evalua si hay un movimiento para que el computador gane
 			for (int i = 0; i < BOARD_SIZE; i++) {
 				if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
 					char curr = mBoard[i];
@@ -133,8 +140,7 @@ public class TicTacToeGame {
 						mBoard[i] = curr;
 				}
 			}
-	
-			// See if there's a move O can make to block X from winning
+			// Se evalua si hay un movimiento del computador para evitar que el humano gane
 			for (int i = 0; i < BOARD_SIZE; i++) {
 				if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
 					char curr = mBoard[i];   // Save the current number
@@ -149,8 +155,7 @@ public class TicTacToeGame {
 						mBoard[i] = curr;
 				}
 			}
-	
-			// Generate random move
+			//De lo contrario genera un movimiento aleatorio disponible
 			do
 			{
 				move = mRand.nextInt(BOARD_SIZE);
@@ -160,14 +165,17 @@ public class TicTacToeGame {
 
 		setMove(COMPUTER_PLAYER, move);
 		return move;
-	}	
-
+	}
+	//clearBoard()
+	//Limpia el tablero
 	public void clearBoard(){
 		for(int i = 0; i<BOARD_SIZE; i++){
 			mBoard[i]=OPEN_SPOT;
 		}
 	}
-
+	//setMove() 
+	//Guarda en el tablero un movimiento de un jugador(Humano/computador) en una posicion determinada
+	//Retorna falso si la casilla esta ocupada, de lo contrario retorna verdadero
 	public boolean	setMove(char player,int	location){
 		if(mBoard[location]==OPEN_SPOT){
 			if(player == HUMAN_PLAYER){
